@@ -56,7 +56,7 @@ public class TransferController {
 
     @GetMapping("/history-transfers")
     public ModelAndView showListTransfers() {
-        ModelAndView modelAndView = new ModelAndView("/transaction/transfers_list");
+        ModelAndView modelAndView = new ModelAndView("/transaction/transfers_history");
         List<Customer> customersList = customerService.findAll();
         List<Transfer> transfers = transferService.findAll();
         long total = 0;
