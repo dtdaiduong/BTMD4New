@@ -16,6 +16,7 @@ public class Customer {
 
     @NotEmpty(message = "fullName not empty")
     @Size(min = 10, max = 100)
+    @Column (name = "full_name")
     private String fullName;
 
     @Pattern(regexp = "(^$|[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$)",
@@ -24,7 +25,7 @@ public class Customer {
     @NotEmpty()
     private String email;
 
-    @Pattern(regexp = "(^$|[0][0-9]{9,10}$)",
+    @Pattern(regexp = "(^[0][1-9][0-9]{8}$)",
             message = "SDT gom 10 chu so, 0987654321")
     private String phone;
 

@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Create customer</title>
-    <th:block th:replace="~{/layout/head_crud::head}"></th:block>
+    <link rel="shortcut icon" href="/tools/font/favicon.ico">
+    <link rel="stylesheet" href="/tools/font/fontawesome-free-6.1.1-web">
+    <link rel="stylesheet" href="/tools/css/bootstrap.css">
+    <link rel="stylesheet" href="/tools/css/style.css">
+    <link rel="stylesheet" href="/tools/css/swetalert2.min.css">
 <body>
 <div class="container">
-    <div class="row" id="header">
+    <div class="row">
         <div class="col-md-6">
             <h1>Create customer</h1>
         </div>
         <div class="col-md-6">
-            <button type="button" class="btn btn-outline-light" style="float: right;"
-                    onclick="window.location.href='/customers'">
-                <i class="fa fa-list"></i>
+            <a href="/customers" class="btn btn-outline-light">
+                <i class="fa fa-list" aria-hidden="true"></i>
                 <span>Customers List</span>
-            </button>
+            </a>
         </div>
     </div>
 
@@ -28,7 +31,7 @@
                 <input type="text" class="form-control" id="fullName" name="fullName"
                        th:field="*{fullName}">
                 <div class="invalid-feedback">
-                    Please choose a FullName. VD: Le Phung Nhat Truong
+                    Please choose a FullName. VD: Nguyen Van A
                 </div>
             </div>
             <div class="col-md-6">
