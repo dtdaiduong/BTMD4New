@@ -1,7 +1,10 @@
 package duong.cg.model;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import java.sql.Date;
 import java.time.LocalDateTime;
 
 @Entity
@@ -10,41 +13,45 @@ public class Transfer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Date create_at;
+    private String create_by;
+    @ColumnDefault("0")
+    private int deleted;
+    private Date update_at;
+    private String update_by;
+    @ColumnDefault("10")
+    private int fee;
+    private Long fee_amount;
+    private Long transaction_amount;
+    @Min(value = 10000, message = "transfer min 10000$")
+    private Long transfer_amount;
 
-    private Long idSender;
 
-    private Long idRecipient;
+    @ManyToOne
+    @JoinColumn(name = "recipient_Id")
+    private Customer customerRecipient;
+    @ManyToOne
+    @JoinColumn(name = "sender_Id")
+    private Customer customerSender;
 
-    @Min(value = 1000, message = "transfer min 1000$")
-    private long transferAmount;
+    public Transfer() {
+    }
 
-    private long fees;
-
-    //    @Min(value = 1000, message = "transfer min 1000$")
-    private long transaction_amount;
-
-    private boolean isDelete = false;
-
-    private LocalDateTime dateTime = LocalDateTime.now();
-
-    public Transfer() {}
-
-    public Transfer(Long id, Long idSender, Long idRecipient, long transferAmount, long fees, long transaction_amount, boolean isDelete, LocalDateTime dateTime) {
+    public Transfer(Long id, Date create_at, String create_by, int deleted,
+                    Date update_at, String update_by, int fee, Long fee_amount, Long transaction_amount, Long transfer_amount, Customer customerRecipient, Customer customerSender) {
         this.id = id;
-        this.idSender = idSender;
-        this.idRecipient = idRecipient;
-        this.transferAmount = transferAmount;
-        this.fees = fees;
+        this.create_at = create_at;
+        this.create_by = create_by;
+        this.deleted = deleted;
+        this.update_at = update_at;
+        this.update_by = update_by;
+        this.fee = fee;
+        this.fee_amount = fee_amount;
         this.transaction_amount = transaction_amount;
-        this.isDelete = isDelete;
-        this.dateTime = dateTime;
+        this.transfer_amount = transfer_amount;
+        this.customerRecipient = customerRecipient;
+        this.customerSender = customerSender;
     }
-
-    public Transfer(Long idSender) {
-        this.idSender = idSender;
-        this.fees = 10;
-    }
-
 
     public Long getId() {
         return id;
@@ -54,59 +61,91 @@ public class Transfer {
         this.id = id;
     }
 
-    public Long getIdSender() {
-        return idSender;
+    public Date getCreate_at() {
+        return create_at;
     }
 
-    public void setIdSender(Long idSender) {
-        this.idSender = idSender;
+    public void setCreate_at(Date create_at) {
+        this.create_at = create_at;
     }
 
-    public Long getIdRecipient() {
-        return idRecipient;
+    public String getCreate_by() {
+        return create_by;
     }
 
-    public void setIdRecipient(Long idRecipient) {
-        this.idRecipient = idRecipient;
+    public void setCreate_by(String create_by) {
+        this.create_by = create_by;
     }
 
-    public long getTransferAmount() {
-        return transferAmount;
+    public int getDeleted() {
+        return deleted;
     }
 
-    public void setTransferAmount(long transferAmount) {
-        this.transferAmount = transferAmount;
+    public void setDeleted(int deleted) {
+        this.deleted = deleted;
     }
 
-    public long getFees() {
-        return fees;
+    public Date getUpdate_at() {
+        return update_at;
     }
 
-    public void setFees(long fees) {
-        this.fees = fees;
+    public void setUpdate_at(Date update_at) {
+        this.update_at = update_at;
     }
 
-    public long getTransaction_amount() {
+    public String getUpdate_by() {
+        return update_by;
+    }
+
+    public void setUpdate_by(String update_by) {
+        this.update_by = update_by;
+    }
+
+    public int getFee() {
+        return fee;
+    }
+
+    public void setFee(int fee) {
+        this.fee = fee;
+    }
+
+    public Long getFee_amount() {
+        return fee_amount;
+    }
+
+    public void setFee_amount(Long fee_amount) {
+        this.fee_amount = fee_amount;
+    }
+
+    public Long getTransaction_amount() {
         return transaction_amount;
     }
 
-    public void setTransaction_amount(long transaction_amount) {
+    public void setTransaction_amount(Long transaction_amount) {
         this.transaction_amount = transaction_amount;
     }
 
-    public boolean isDelete() {
-        return isDelete;
+    public Long getTransfer_amount() {
+        return transfer_amount;
     }
 
-    public void setDelete(boolean delete) {
-        isDelete = delete;
+    public void setTransfer_amount(Long transfer_amount) {
+        this.transfer_amount = transfer_amount;
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public Customer getCustomerRecipient() {
+        return customerRecipient;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
+    public void setCustomerRecipient(Customer customerRecipient) {
+        this.customerRecipient = customerRecipient;
+    }
+
+    public Customer getCustomerSender() {
+        return customerSender;
+    }
+
+    public void setCustomerSender(Customer customerSender) {
+        this.customerSender = customerSender;
     }
 }

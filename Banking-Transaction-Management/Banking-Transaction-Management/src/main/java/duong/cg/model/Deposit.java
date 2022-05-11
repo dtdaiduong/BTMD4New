@@ -1,9 +1,13 @@
 package duong.cg.model;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Table( name = "deposits")
@@ -11,36 +15,51 @@ public class Deposit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Date create_at;
+    private String create_by;
 
-    private Long idOwner;
+//    @Min(value = 10001, message = "Deposit not min 10000")
+//    @Max(value = 10000000000L, message = "Deposit not max 10000000000L")
+    @ColumnDefault("0")
+    private int deleted;
+    private Date update_at;
+    private String update_by;
+    @ManyToOne
+    @JoinColumn(name = "customer_Id")
+    private Customer customerDeposit;
+    //    @Pattern(regexp = "^$[0-9]{12}", message = "This field must be number")
+    private Long transaction_amount;
 
-    @Min(value = 1001, message = "Deposit not min 1000")
-    @Max(value = 10000000000L, message = "Deposit not max 10000000000L")
-    private long amount;
+    public Deposit() {
+    }
 
-    private boolean isDelete = false;
+    public Deposit(Date create_at, Customer customerDeposit) {
+        this.create_at = create_at;
+        this.customerDeposit = customerDeposit;
+    }
 
-    private LocalDateTime dateTime = LocalDateTime.now();
+    public Deposit(Date create_at, String create_by, int deleted,
+                   Date update_at, String update_by, Customer customerDeposit, Long transaction_amount) {
+        this.create_at = create_at;
+        this.create_by = create_by;
+        this.deleted = deleted;
+        this.update_at = update_at;
+        this.update_by = update_by;
+        this.customerDeposit = customerDeposit;
+        this.transaction_amount = transaction_amount;
+    }
 
-    public Deposit() {}
-
-    public Deposit(Long id, Long idOwner, long amount, boolean isDelete, LocalDateTime dateTime) {
+    public Deposit(Long id, Date create_at, String create_by, int deleted,
+                   Date update_at, String update_by, Customer customerDeposit, Long transaction_amount) {
         this.id = id;
-        this.idOwner = idOwner;
-        this.amount = amount;
-        this.isDelete = isDelete;
-        this.dateTime = dateTime;
+        this.create_at = create_at;
+        this.create_by = create_by;
+        this.deleted = deleted;
+        this.update_at = update_at;
+        this.update_by = update_by;
+        this.customerDeposit = customerDeposit;
+        this.transaction_amount = transaction_amount;
     }
-
-    public Deposit(Long idOwner) {
-        this.idOwner = idOwner;
-    }
-
-    public Deposit(Long idOwner, long amount) {
-        this.idOwner = idOwner;
-        this.amount = amount;
-    }
-
 
     public Long getId() {
         return id;
@@ -50,35 +69,63 @@ public class Deposit {
         this.id = id;
     }
 
-    public Long getIdOwner() {
-        return idOwner;
+    public Date getCreate_at() {
+        return create_at;
     }
 
-    public void setIdOwner(Long idOwner) {
-        this.idOwner = idOwner;
+    public void setCreate_at(Date create_at) {
+        this.create_at = create_at;
     }
 
-    public long getAmount() {
-        return amount;
+    public String getCreate_by() {
+        return create_by;
     }
 
-    public void setAmount(long amount) {
-        this.amount = amount;
+    public void setCreate_by(String create_by) {
+        this.create_by = create_by;
     }
 
-    public boolean isDelete() {
-        return isDelete;
+    public int getDeleted() {
+        return deleted;
     }
 
-    public void setDelete(boolean delete) {
-        isDelete = delete;
+    public void setDeleted(int deleted) {
+        this.deleted = deleted;
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public Date getUpdate_at() {
+        return update_at;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
+    public void setUpdate_at(Date update_at) {
+        this.update_at = update_at;
+    }
+
+    public String getUpdate_by() {
+        return update_by;
+    }
+
+    public void setUpdate_by(String update_by) {
+        this.update_by = update_by;
+    }
+
+    public Customer getCustomerDeposit() {
+        return customerDeposit;
+    }
+
+    public void setCustomerDeposit(Customer customerDeposit) {
+        this.customerDeposit = customerDeposit;
+    }
+
+    public Long getTransaction_amount() {
+        return transaction_amount;
+    }
+
+    public void setTransaction_amount(Long transaction_amount) {
+        this.transaction_amount = transaction_amount;
+    }
+
+    public void setCustomerDeposit(Optional<Customer> customer) {
+        this.customerDeposit = customerDeposit;
     }
 }

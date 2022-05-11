@@ -1,12 +1,12 @@
 package duong.cg.configuration;
 
 import duong.cg.repository.customer.CustomerRepository;
-import duong.cg.repository.customer.ICustomerRepository;
+import duong.cg.repository.ICustomerRepository;
 import duong.cg.repository.deposit.DepositRepository;
 import duong.cg.repository.deposit.IDepositRepository;
-import duong.cg.repository.transfer.ITransferRepository;
+import duong.cg.repository.ITransferRepository;
 import duong.cg.repository.transfer.TransferRepository;
-import duong.cg.repository.withdraw.IWithdrawRepository;
+import duong.cg.repository.IWithdrawRepository;
 import duong.cg.repository.withdraw.WithdrawRepository;
 import duong.cg.service.customer.CustomerService;
 import duong.cg.service.customer.ICustomerService;

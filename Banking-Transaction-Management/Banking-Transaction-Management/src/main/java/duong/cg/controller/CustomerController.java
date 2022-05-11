@@ -2,120 +2,163 @@ package duong.cg.controller;
 
 import duong.cg.model.Customer;
 import duong.cg.service.customer.ICustomerService;
+import duong.cg.service.deposit.IDepositService;
+import duong.cg.service.transfer.ITransferService;
+import duong.cg.service.withdraw.IWithdrawService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Controller
+@RequestMapping("/customer")
 public class CustomerController {
     @Autowired
     private ICustomerService customerService;
 
-    @GetMapping("/customers")
+    @Autowired
+    private IDepositService depositService;
+
+    @Autowired
+    private IWithdrawService withdrawService;
+
+    @Autowired
+    private ITransferService transferService;
+
+    @GetMapping
     public ModelAndView showListCustomer() {
         ModelAndView modelAndView = new ModelAndView("/customer/list");
-        modelAndView.addObject("customers", customerService.findAll());
+        List<Customer> customers = customerService.findAll();
+        modelAndView.addObject("customers", customers);
         return modelAndView;
     }
 
-    @GetMapping("/create-customer")
-    public ModelAndView showCreateForm() {
-        ModelAndView modelAndView = new ModelAndView("/customer/create");
-        modelAndView.addObject("customer", new Customer());
-        modelAndView.addObject("message", null);
-        return modelAndView;
-    }
-
-
-    @PostMapping("/create-customer")
-    public ModelAndView saveCustomer(@Validated @ModelAttribute Customer customer,
-                                     BindingResult bindingResult) throws Exception {
-        ModelAndView modelAndView = new ModelAndView("/customer/create");
-        String error = null;
-        if (bindingResult.hasFieldErrors()) {
-            List<ObjectError> errorList = bindingResult.getAllErrors();
-            error = "New customer create error \n";
-            for (int i = 0; i < errorList.size(); i++) {
-                error += "***" + errorList.get(i).getDefaultMessage() + "\n";
-            }
-            modelAndView.addObject("error", error);
+    @GetMapping("deposit/{id}")
+    private ModelAndView showListCustomerAfterDeposit(@PathVariable("id") Long id) {
+        ModelAndView modelAndView = new ModelAndView("/customer/list");
+        if (!depositService.existById(id)) {
+            modelAndView.setViewName("redirect:/customer");
         }
-        try {
+        List<Customer> customers = customerService.findAll();
+        depositService.remove(id);
+        modelAndView.addObject("customers", customers);
+        return modelAndView;
+    }
+
+    @GetMapping("withdraw/{id}")
+    private ModelAndView showListCustomerAfterWithdraw(@PathVariable("id") Long id) {
+        ModelAndView modelAndView = new ModelAndView("/customer/list-customer");
+        if (!withdrawService.existById(id)){
+            modelAndView.setViewName("redirect:/customer");
+            return modelAndView;
+        }
+        List<Customer> customers = customerService.findAll();
+        withdrawService.remove(id);
+        modelAndView.addObject("customers", customers);
+        return modelAndView;
+    }
+
+    @GetMapping("/transfer/{id}")
+    private ModelAndView showListCustomerAfterTransfer(@PathVariable("id") Long id){
+        ModelAndView modelAndView = new ModelAndView("/customer/ list-customer");
+        if (!transferService.existById(id)){
+            modelAndView.setViewName("redirect:/customer");
+            return modelAndView;
+        }
+        List<Customer> customers = customerService.findAll();
+        transferService.remove(id);
+        modelAndView.addObject("customers", customers);
+        return modelAndView;
+    }
+
+    @GetMapping("/save")
+    private ModelAndView showCreateCustomer(){
+        ModelAndView modelAndView = new ModelAndView("/customer/createCustomer");
+        modelAndView.addObject("customer", new Customer());
+        return modelAndView;
+    }
+
+    @PostMapping("/save")
+    private ModelAndView saveNewCustomer(@Validated @ModelAttribute("customer") Customer customer, BindingResult result){
+        ModelAndView modelAndView = new ModelAndView("/customer/createCustomer");
+        if (result.hasFieldErrors()){
+            return modelAndView;
+        } else {
+            customer.setBalance(0L);
             customerService.save(customer);
             modelAndView.addObject("customer", new Customer());
-            modelAndView.addObject("message", "New Customer created successfully");
+            modelAndView.addObject("message", "Create new customer successful");
             return modelAndView;
-        } catch (Exception e) {
-            modelAndView.addObject("error", error);
-            modelAndView.addObject("customer", new Customer());
         }
+    }
+
+    @GetMapping("/update/{id}")
+    private ModelAndView showFormUpdateCustomer(@PathVariable("id")Long id){
+        ModelAndView modelAndView = new ModelAndView("/customer/updateCustomer");
+        Optional<Customer> customer = customerService.findById(id);
+        modelAndView.addObject("customer", customer);
         return modelAndView;
     }
 
-    @GetMapping("/edit-customer/{id}")
-    public ModelAndView showEditForm(@PathVariable Long id) {
-        Customer customer = customerService.findById(id);
-
-        if (customer != null) {
-            ModelAndView modelAndView = new ModelAndView("/customer/edit");
-            modelAndView.addObject("customer", customer);
-            modelAndView.addObject("message", null);
+    @PostMapping("/update")
+    private ModelAndView updateCustomer(@Validated @ModelAttribute("customer") Customer customer, BindingResult result){
+        ModelAndView modelAndView = new ModelAndView("/customer/updateCustomer");
+        if (result.hasFieldErrors()){
+            return modelAndView;
+        }
+        if (!customerService.existById(customer.getId())){
+            modelAndView.addObject("message", "Id customer not exist");
             return modelAndView;
         } else {
-            ModelAndView modelAndView = new ModelAndView("/error");
+            customerService.save(customer);
+            modelAndView.addObject("customer", customer);
+            modelAndView.addObject("massage", "Update successfully");
             return modelAndView;
         }
     }
 
-    @PostMapping("/edit-customer")
-    public ModelAndView updateCustomer(@Validated @ModelAttribute Customer customer , BindingResult bindingResult) {
-        customerService.save(customer);
-        ModelAndView modelAndView = new ModelAndView("/customer/edit");
-        String error = null;
-        if (bindingResult.hasFieldErrors()) {
-            List<ObjectError> errorList = bindingResult.getAllErrors();
-            error = "Edit customer error \n";
-            for (int i = 0; i < errorList.size(); i++) {
-                error += "***" + errorList.get(i).getDefaultMessage() + "\n";
-            }
-            modelAndView.addObject("error", error);
-        }
-        try {
-            modelAndView.addObject("customer",customer);
-            modelAndView.addObject("message", "Customer update successfully");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            modelAndView.addObject("customer",customer);
-            modelAndView.addObject("error",error);
-        }
+    @GetMapping("/suspension/{id}")
+    private ModelAndView showFormSuspension(@PathVariable("id") Long id){
+        ModelAndView modelAndView = new ModelAndView("/customer/suspensionCustomer");
+        Optional<Customer> customer = customerService.findById(id);
+        modelAndView.addObject("customer", customer);
         return modelAndView;
     }
 
-    @GetMapping("/delete-customer/{id}")
-    public ModelAndView showDeleteForm(@PathVariable Long id) {
-        Customer customer = customerService.findById(id);
-        if (customer != null) {
-            ModelAndView modelAndView = new ModelAndView("/customer/delete");
-            modelAndView.addObject("customer", customer);
+    @PostMapping("/suspensiom")
+    private ModelAndView suspension(@ModelAttribute("customer") Customer customer){
+        ModelAndView modelAndView = new ModelAndView("redirect:/customer");
+        if (!customerService.existById(customer.getId())){
+            modelAndView.addObject("message", "This id is not exist");
             return modelAndView;
-        } else {
-            ModelAndView modelAndView = new ModelAndView("/error");
+        }else {
+            customerService.remove(customer.getId());
+            modelAndView.addObject("message", "Suspension is successful");
             return modelAndView;
         }
     }
 
-    @PostMapping("/delete-customer")
-    public String deleteCustomer(@ModelAttribute Customer customer) {
-        customerService.remove(customer.getId());
-        return "redirect:/customers";
-    }
+
+
+
+
+
+
+
+
+
 }
+
+
+
+
+
+
+

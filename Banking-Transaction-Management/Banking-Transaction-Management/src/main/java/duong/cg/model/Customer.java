@@ -1,10 +1,12 @@
 package duong.cg.model;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
+import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "customers")
@@ -14,43 +16,86 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "fullName not empty")
-    @Size(min = 10, max = 100)
+    @NotBlank(message = "FullName not empty")
+    @Size(min = 6, max = 40, message = "Full Name required min 6 and max 40")
     @Column (name = "full_name")
     private String fullName;
 
+    @Email
     @Pattern(regexp = "(^$|[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$)",
             message = "vd: admin@gmail.com")
     @Column(unique = true)
-    @NotEmpty()
+    @NotBlank(message = "Phone not empty")
     private String email;
 
     @Pattern(regexp = "(^[0][1-9][0-9]{8}$)",
             message = "SDT gom 10 chu so, 0987654321")
+    @NotBlank(message = "Phone number not empty")
     private String phone;
-
-
+    @NotBlank(message = "Address not empty")
     private String address;
+    @ColumnDefault("0")
+    private long balance;
+    private Date create_at;
+    private String create_by;
+    private Date update_at;
+    private String update_by;
+    @ColumnDefault("0")
+    private int deleted;
 
-    private long balance = 0;
+    @OneToMany(mappedBy = "customerWithDraw")
+    private List<Withdraw> withdraws;
 
-    private boolean isDelete = false;
+    @OneToMany(mappedBy = "customerDeposit", cascade = CascadeType.ALL)
+    private List<Deposit> deposits;
 
-    private LocalDateTime datetime = LocalDateTime.now();
+    @OneToMany(mappedBy = "customerRecipient")
+    private List<Transfer> transfersRecipient;
 
-    public Customer() {}
+    @OneToMany(mappedBy = "customerSender")
+    private List<Transfer> transfersSender;
 
-    public Customer(Long id, String fullName, String email, String phone, String address, long balance, boolean isDelete, LocalDateTime datetime) {
+    public Customer() {
+    }
+
+    public Customer(String fullName, String email, String phone, String address, Long balance,
+                    Date create_at, String create_by, Date update_at, String update_by, int deleted, List<Withdraw> withdraws) {
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.balance = balance;
+        this.create_at = create_at;
+        this.create_by = create_by;
+        this.update_at = update_at;
+        this.update_by = update_by;
+        this.deleted = deleted;
+        this.withdraws = withdraws;
+    }
+
+    public Customer(String fullName, String email, String phone, String address,Long balance) {
+        this.fullName = fullName;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.balance = balance;
+    }
+
+    public Customer(Long id, String fullName, String email, String phone, String address, Long balance, Date create_at, String create_by,
+                    Date update_at, String update_by, int deleted, List<Withdraw> withdraws) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
         this.phone = phone;
         this.address = address;
         this.balance = balance;
-        this.isDelete = isDelete;
-        this.datetime = datetime;
+        this.create_at = create_at;
+        this.create_by = create_by;
+        this.update_at = update_at;
+        this.update_by = update_by;
+        this.deleted = deleted;
+        this.withdraws = withdraws;
     }
-
 
     public Long getId() {
         return id;
@@ -92,28 +137,84 @@ public class Customer {
         this.address = address;
     }
 
-    public long getBalance() {
+    public Long getBalance() {
         return balance;
     }
 
-    public void setBalance(long balance) {
+    public void setBalance(Long balance) {
         this.balance = balance;
     }
 
-    public boolean isDelete() {
-        return isDelete;
+    public Date getCreate_at() {
+        return create_at;
     }
 
-    public void setDelete(boolean delete) {
-        isDelete = delete;
+    public void setCreate_at(Date create_at) {
+        this.create_at = create_at;
     }
 
-    public LocalDateTime getDatetime() {
-        return datetime;
+    public String getCreate_by() {
+        return create_by;
     }
 
-    public void setDatetime(LocalDateTime datetime) {
-        this.datetime = datetime;
+    public void setCreate_by(String create_by) {
+        this.create_by = create_by;
+    }
+
+    public Date getUpdate_at() {
+        return update_at;
+    }
+
+    public void setUpdate_at(Date update_at) {
+        this.update_at = update_at;
+    }
+
+    public String getUpdate_by() {
+        return update_by;
+    }
+
+    public void setUpdate_by(String update_by) {
+        this.update_by = update_by;
+    }
+
+    public int getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(int deleted) {
+        this.deleted = deleted;
+    }
+
+    public List<Withdraw> getWithdraws() {
+        return withdraws;
+    }
+
+    public void setWithdraws(List<Withdraw> withdraws) {
+        this.withdraws = withdraws;
+    }
+
+    public List<Deposit> getDeposits() {
+        return deposits;
+    }
+
+    public void setDeposits(List<Deposit> deposits) {
+        this.deposits = deposits;
+    }
+
+    public List<Transfer> getTransfersRecipient() {
+        return transfersRecipient;
+    }
+
+    public void setTransfersRecipient(List<Transfer> transfersRecipient) {
+        this.transfersRecipient = transfersRecipient;
+    }
+
+    public List<Transfer> getTransfersSender() {
+        return transfersSender;
+    }
+
+    public void setTransfersSender(List<Transfer> transfers_sender) {
+        this.transfersSender = transfers_sender;
     }
 
 }

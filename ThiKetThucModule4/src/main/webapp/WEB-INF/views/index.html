@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <th:block th:replace="layout/head::head" />
+    <th:block th:replace="layout/script::script" />
+    <title>City List</title>
+</head>
+<body>
+    <div class="container mt-2">
+        <div class="row">
+            <div class="col-8">
+                <h2 class="card-title">Danh sách thành phố</h2>
+            </div>
+            <div class="col-4 text-end">
+                <a href="/create" class="btn btn-outline-primary">
+                    <i class="fa fa-plus-square" aria-hidden="true"></i>
+                    <span>Thêm thành phố</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <table class="table table-hover table-borderless">
+                <thead style="color: lightskyblue">
+                <tr>
+                    <th scope="col" class="text-center">#</th>
+                    <th scope="col" class="text-center">Tên thành phố</th>
+                    <th scope="col" class="text-center">Quốc gia</th>
+                    <th scope="col" colspan="2" class="text-center"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="city, count : ${cities}">
+                    <tr>
+                        <td class="text-center" th:text="${count.count}"></td>
+                        <td class="text-center" th:text="${city.cityName}"></td>
+                        <td class="text-center" th:text="${city.country}"></td>
+                        <td>
+                            <a class="btn btn-outline-secondary" th:href="@{/update/__${city.id}__}">
+                                <i class="fa fa-edit" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn btn-outline-danger" th:href="@{/delete/__${city.id}__}"  onclick="return confirm('Bạn có muốn xoá thành phố này ?');">
+                                <i class="fa fa-ban" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+
+                </th:block>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+<script th:inline="javascript">
+        var statusCreate = [[${statusCreate}]];
+        if (statusCreate == true){
+            swal("Thay đổi thành công","Thành phố đã được thêm mới","success");
+        }
+
+        var statusUpdate = [[${statusUpdate}]];
+        if (statusCreate == true){
+            swal("Thay đổi thành công","Thành phố đã được thêm mới","success");
+        }
+    </script>
+</body>
+</html>
